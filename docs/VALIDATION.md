@@ -1,13 +1,20 @@
-# Validation - 2026-10-06
+# Проверки
 
-Windows / Python 3.12 / Node 22 / pnpm 11.19.0. TypeScript checks and production builds passed locally.
-All examples use synthetic data. Local tests do not imply successful hosted CI or quality on real customer data.
+Проверено 6 октября 2026 на Windows: Python 3.12, Node.js 22 и pnpm 11.19.0.
 
-7 tests passed for server-side price calculation, stock, SKU and quantity checks, duplicate rejection, disabled model and concurrent-call rejection. An actual gpt-6.1-sol Codex invocation selected 2 Oak desks and 2 Form chairs; server total was 87,600 RUB. The invocation was repeated after disabling shell/unified_exec/web search. This narrow test does not prove general model reliability or prompt-injection resistance.
+## Функциональность
 
-Docker image built and started locally as a non-root user. Static UI and health endpoint returned successfully. Container catalogue has 6 synthetic products; desk + chair quote was 43,800 RUB. Model access stayed disabled in the container.
+- 7 серверных тестов: расчёт цены, артикулы, остатки, количество, повторные позиции, отключённая модель и параллельные запросы.
+- Реальный авторизованный вызов Codex CLI с gpt-6.1-sol выбрал стол Line и кресло Form. Сервер проверил товары и рассчитал 43 800 ₽. Такой отдельный вызов подтверждает работу интеграции, но не измеряет общее качество подбора или устойчивость к любым запросам.
+- Ручной расчёт в Docker Compose также дал 43 800 ₽; доступ к модели в контейнере выключен.
+- В браузере проверены поиск и заказ, все шесть карточек и соответствие фотографий товарам: одно основное изображение, без повторных ракурсов.
 
-## Selected interface verification
+## Сборка и запуск
 
-Final TypeScript/Vite build passed. Browser review at measured 1454 × 818 desktop and 443 px mobile width found no horizontal page overflow. Escape closes project dialogs. `preview.png` is an actual local application screenshot, not a design mockup.
-Browser quote for one Line desk and one Form chair: 43,800 RUB. One actual authenticated gpt-6.1-sol Codex request selected these two SKUs and returned the same server-validated quote. Search submission was checked after fixing input focus.
+- TypeScript и сборка Vite прошли.
+- Команды Docker Compose из README выполнены: контейнер запустился, API health вернул `ok`, интерфейс доступен на порту 8000.
+- GitHub Actions запускает серверные тесты, проверку TypeScript, сборку интерфейса и Docker-образа. Актуальный результат доступен по значку проверок в README.
+
+## Интерфейс
+
+Превью сделаны с работающего приложения. Проверены ширины 1454 и 443 пикселя: горизонтального переполнения страницы нет. В режиме снимка отсутствуют полосы прокрутки.

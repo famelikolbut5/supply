@@ -4,3 +4,5 @@
 
 
 .search button{display:grid;place-items:center;padding:0;border:0;background:transparent;color:inherit}
+
+html[data-preview],html[data-preview] *{scrollbar-width:none!important}html[data-preview]::-webkit-scrollbar,html[data-preview] *::-webkit-scrollbar{display:none!important}

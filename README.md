@@ -1,75 +1,50 @@
 # Supply
 
-Codex CLI catalogue assistant with structured output and server-validated prices and stock.
+Каталог мебели для офиса с подбором по запросу. Покупатель выбирает товары вручную или описывает задачу помощнику, затем получает предложение с количеством, ценами и общей суммой.
 
-![Interface](docs/preview.png)
+[![Проверки](https://github.com/famelikolbut5/supply/actions/workflows/ci.yml/badge.svg)](https://github.com/famelikolbut5/supply/actions/workflows/ci.yml)
 
-[Validation notes](docs/VALIDATION.md) · [Source license](LICENSE)
+![Интерфейс Supply](docs/preview.png)
 
-## What it does
+## Возможности
 
-Покупатель - Codex CLI (gpt-6.1-sol) - SKU и количество - проверка остатков - серверный расчёт предложения.
+- Поиск по каталогу, карточки товаров и доступные остатки.
+- Корзина с изменением количества и расчётом общей суммы.
+- Подбор товаров через локальный Codex CLI.
+- Проверка выбранных артикулов, остатков и количеств на сервере.
 
-Buyer - Codex CLI (gpt-6.1-sol) - structured SKU selection - stock validation - server-calculated quote.
+## Как устроен проект
 
-Independent portfolio demo, written from scratch. Synthetic examples only. No commercial source, proprietary prompts, client recordings or customer data.
+Помощник выбирает артикулы и количество. Цены и итоговую сумму рассчитывает сервер по каталогу, поэтому ответ модели не становится источником цены. Каталог и ручное составление предложения работают без подключения модели.
 
-## Run locally
+**Стек:** Python, FastAPI, Pydantic, Codex CLI, React, TypeScript, Vite.
 
-Python 3.12, Node 22 and pnpm 11.19.0:
+## Структура
 
-```sh
-python -m venv .venv
-# Windows: .venv\Scripts\activate
-# Linux/macOS: source .venv/bin/activate
-pip install -r requirements.txt
-pnpm install --frozen-lockfile
-pnpm build
-uvicorn backend.app:app --host 127.0.0.1 --port 8000
+```text
+backend/        каталог, подбор и серверный расчёт предложения
+src/            интерфейс, состояния и работа с API
+public/         иллюстрации мебели и статические материалы
+tests/          проверки поведения серверной части
+docs/           запуск, проверки и материалы проекта
+Dockerfile      сборка интерфейса и серверного приложения
+compose.yml     локальный запуск с сохранением данных
 ```
 
-Open http://127.0.0.1:8000. For UI development: `pnpm dev` (API proxy expects port 8000).
+## Запуск
+
+Нужны Git и Docker. Каждый проект запускается отдельно на порту 8000.
 
 ```sh
+git clone https://github.com/famelikolbut5/supply.git
+cd supply
 docker compose up --build
 ```
 
-Local-only binding is deliberate. These demos have no user authentication and are not hardened multi-user hosted services.
+Откройте [localhost:8000](http://localhost:8000). [Запуск без Docker и настройки](docs/RUNNING.md).
 
-## Checks and delivery
+## Состав демоверсии
 
-```sh
-pip install pytest httpx
-pytest -q
-pnpm build
-```
+В каталоге шесть демонстрационных товаров с ценами и остатками. Ручной подбор доступен сразу; настройка помощника через Codex CLI описана в инструкции запуска.
 
-GitHub Actions runs backend checks, TypeScript/build checks and Docker image build. Model credentials are never included in CI or a public image.
-
-## Boundaries
-
-AI-диалог только для доверенных запросов локально. Shell и web tools отключены; это не доказательство полной изоляции CLI. Не публикуйте сервер с ENABLE_CODEX=1 без отдельной аутентификации, изоляции и ограничений. Нет 1С, оплаты и внешних заказов.
-
-The full application runs locally with its Python backend. A static build alone cannot transcribe audio, execute workflows, render video or call Codex.
-
-## Stack and attribution
-
-Python / FastAPI / React / TypeScript / Vite / Motion / Lucide. Google Fonts: Golos Text (SIL OFL). All third-party dependencies retain their own licenses. See `THIRD_PARTY.md`.
-
-MIT for independently authored source. Asset provenance and actual validation: `docs/VALIDATION.md`.
-
-## Enable the actual Codex agent
-
-Install the official Codex CLI and run `codex login` on your own computer. Existing subscription authentication is used; no API key is bundled.
-
-PowerShell:
-```powershell
-$env:ENABLE_CODEX = '1'
-$env:CODEX_BIN = 'C:\path\to\codex.exe'
-uvicorn backend.app:app --host 127.0.0.1 --port 8000
-```
-
-On Linux/macOS: `ENABLE_CODEX=1 uvicorn backend.app:app --host 127.0.0.1 --port 8000`.
-The default Docker image deliberately does not include an authenticated Codex CLI. Its catalogue/quote endpoints work without model access.
-
-Official integration reference: https://learn.chatgpt.com/docs/non-interactive-mode
+[Проверки и результаты](docs/VALIDATION.md) | [Лицензии зависимостей и материалов](THIRD_PARTY.md) | [MIT](LICENSE)
